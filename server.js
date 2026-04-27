@@ -206,4 +206,3 @@ app.listen(port, () => {
     console.log(`Server listening at http://localhost:${port}`);
     console.log(`Webhook endpoint ready at http://localhost:${port}/bypass-cookie`);
 });
-              

